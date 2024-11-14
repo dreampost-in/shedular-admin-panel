@@ -13,6 +13,7 @@ const Sidebar = () => {
         <Link className="nav-link" to="/user-feedback">User Feedback</Link>
         <Link className="nav-link" to="/experts">Experts</Link>
         <Link className="nav-link" to="/transaction-records">Transaction Records</Link>
+        <Link className="nav-link" to="/available-schedules">Available Schedules</Link> {/* Added link */}
       </nav>
     </div>
   );

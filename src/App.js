@@ -10,6 +10,7 @@ import UserFeedback from './pages/UserFeedback';
 import Experts from './pages/Experts';
 import TransactionRecords from './pages/TransactionRecords';
 import Scheduler from './pages/Scheduler';
+import AvailableSchedules from './components/AvailableSchedules';
 
 const App = () => {
   return (
@@ -26,6 +27,7 @@ const App = () => {
             <Route path="/experts" element={<Experts />} />
             <Route path="/transaction-records" element={<TransactionRecords />} />
             <Route path="/scheduler" element={<Scheduler />} />
+            <Route path="/available-schedules" element={<AvailableSchedules />} /> {/* New route */}
           </Routes>
         </div>
       </div>
