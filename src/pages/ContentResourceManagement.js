@@ -65,6 +65,7 @@ console.log(newSchedule,newSchedule.goalId)
       // Combine the schedule with the selected goalId
       const scheduleWithGoalId = {
         ...newSchedule,
+        goal: newSchedule.goal, // Ensure goalId is set
         goalId: newSchedule.goalId, // Ensure goalId is set
       };
 
