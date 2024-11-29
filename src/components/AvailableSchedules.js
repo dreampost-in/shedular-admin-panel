@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from "../apiConfig/apiConfig";
 
 const AvailableSchedules = () => {
   const [schedules, setSchedules] = useState([]);
@@ -8,7 +8,7 @@ const AvailableSchedules = () => {
   useEffect(() => {
     const fetchSchedules = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/schedule/available');
+        const response = await api.get('/schedule/available');
         console.log(response.data)
         setSchedules(response.data); // Assuming the response is an array of schedules
       } catch (error) {
@@ -22,7 +22,7 @@ const AvailableSchedules = () => {
   // Remove a schedule
   const handleRemoveSchedule = async (scheduleId) => {
     try {
-      await axios.delete(`http://localhost:5000/api/schedule/remove/${scheduleId}`);
+      await api.delete(`/schedule/remove/${scheduleId}`);
       // Remove the schedule from the state
       setSchedules(schedules.filter(schedule => schedule._id !== scheduleId));
     } catch (error) {

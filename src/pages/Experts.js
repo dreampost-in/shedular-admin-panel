@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from "../apiConfig/apiConfig";
 
 const ExpertsPage = () => {
   const [experts, setExperts] = useState([]);
@@ -21,7 +21,7 @@ const ExpertsPage = () => {
 
   const fetchExperts = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/experts');
+      const response = await api.get('/experts');
       setExperts(response.data);
     } catch (error) {
       console.error('Failed to fetch experts:', error);
@@ -35,7 +35,7 @@ const ExpertsPage = () => {
 
   const handlePublish = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/api/experts', newExpert);
+      const response = await api.post('/experts', newExpert);
       setExperts((prev) => [...prev, response.data]);
       setNewExpert({ name: '', degree: '', experience: '' });
       setShowForm(false);
@@ -46,7 +46,7 @@ const ExpertsPage = () => {
 
   const handleUpdateExpert = async () => {
     try {
-      const response = await axios.put(`http://localhost:5000/api/experts/${currentExpertId}`, newExpert);
+      const response = await api.put(`/experts/${currentExpertId}`, newExpert);
       setExperts((prev) =>
         prev.map((expert) => (expert._id === currentExpertId ? response.data : expert))
       );
@@ -71,7 +71,7 @@ const ExpertsPage = () => {
 
   const handleRemoveExpert = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/experts/${id}`);
+      await api.delete(`/experts/${id}`);
       setExperts((prev) => prev.filter((expert) => expert._id !== id));
     } catch (error) {
       console.error('Failed to delete expert:', error);

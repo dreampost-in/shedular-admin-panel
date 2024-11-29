@@ -1,5 +1,6 @@
 // src/pages/UserActivityPage.js
 import React, { useState } from 'react';
+import api from "../apiConfig/apiConfig";
 
 const UserActivityPage = () => {
   // Sample user sign-up data (replace with real data or API calls)

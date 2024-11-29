@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from "../apiConfig/apiConfig";
 
 const ContentResourceManagement = () => {
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ const ContentResourceManagement = () => {
   useEffect(() => {
     const fetchSchedules = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/coursecontent/goals');
+        const response = await api.get('/coursecontent/goals');
         setGoalOptions(response.data); // Set the fetched goals to state
       } catch (error) {
         console.error('Error fetching schedules:', error);
@@ -37,7 +37,7 @@ const ContentResourceManagement = () => {
         return ['CGL', 'CPO', 'CHSL', 'MTS', 'GD'];
       case 'RRB':
         return ['NTPC', 'ALP', 'JE', 'Group-D'];
-      case 'Banking':
+      case 'BANKING':
         return ['PO', 'Clerk'];
       default:
         return [];
@@ -70,7 +70,7 @@ console.log(newSchedule,newSchedule.goalId)
       };
 
       // Send the schedule to the backend
-      const response = await axios.post('http://localhost:5000/api/schedule/add', scheduleWithGoalId);
+      const response = await api.post('/schedule/add', scheduleWithGoalId);
 
       // Update the schedules state
       setSchedules((prevSchedules) => [...prevSchedules, response.data.data]);

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import axios from 'axios';
+import api from "../apiConfig/apiConfig";
 
 const Scheduler = () => {
   const [goal, setGoal] = useState('');
@@ -8,12 +8,70 @@ const Scheduler = () => {
   const [features, setFeatures] = useState('');
   const [resources, setResources] = useState('');
   const [courseInfo, setCourseInfo] = useState('');
-  const [columns, setColumns] = useState([{ title: 'Day', rows: [1] }]);
+  const [subjects, setSubjects] = useState([{ title: '', dailyContents: [] }]);
+
+  const handleAddSubject = () => {
+    setSubjects([...subjects, { title: '', dailyContents: [] }]);
+  };
+
+  const handleDeleteSubject = (subjectIndex) => {
+    const updatedSubjects = subjects.filter((_, index) => index !== subjectIndex);
+    setSubjects(updatedSubjects);
+  };
+
+  const handleSubjectTitleChange = (e, subjectIndex) => {
+    const updatedSubjects = [...subjects];
+    updatedSubjects[subjectIndex].title = e.target.value;
+    setSubjects(updatedSubjects);
+  };
+
+  const handleAddDay = (subjectIndex) => {
+    const updatedSubjects = [...subjects];
+    updatedSubjects[subjectIndex].dailyContents.push({
+      day: updatedSubjects[subjectIndex].dailyContents.length + 1,
+      topics: [],
+    });
+    setSubjects(updatedSubjects);
+  };
+
+  const handleDeleteDay = (subjectIndex, dayIndex) => {
+    const updatedSubjects = [...subjects];
+    updatedSubjects[subjectIndex].dailyContents = updatedSubjects[subjectIndex].dailyContents.filter(
+      (_, index) => index !== dayIndex
+    );
+    setSubjects(updatedSubjects);
+  };
+
+  const handleAddTopic = (subjectIndex, dayIndex) => {
+    const updatedSubjects = [...subjects];
+    updatedSubjects[subjectIndex].dailyContents[dayIndex].topics.push({
+      name: '',
+      link: '',
+      hours: 0,
+      pdfName: '',
+      description: '',
+    });
+    setSubjects(updatedSubjects);
+  };
+
+  const handleDeleteTopic = (subjectIndex, dayIndex, topicIndex) => {
+    const updatedSubjects = [...subjects];
+    updatedSubjects[subjectIndex].dailyContents[dayIndex].topics = updatedSubjects[subjectIndex].dailyContents[
+      dayIndex
+    ].topics.filter((_, index) => index !== topicIndex);
+    setSubjects(updatedSubjects);
+  };
+
+  const handleTopicChange = (e, subjectIndex, dayIndex, topicIndex, field) => {
+    const updatedSubjects = [...subjects];
+    updatedSubjects[subjectIndex].dailyContents[dayIndex].topics[topicIndex][field] = e.target.value;
+    setSubjects(updatedSubjects);
+  };
 
   const handleSubmit = async () => {
     try {
-      const payload = { goal, duration, features, resources, courseInfo, columns };
-      const response = await axios.post('http://localhost:5000/api/course-content', payload);
+      const payload = { goal, duration, features, resources, courseInfo, subjects };
+      const response = await api.post('/course-content', payload);
 
       if (response.status === 201) {
         alert('Course content saved successfully!');
@@ -24,63 +82,24 @@ const Scheduler = () => {
     }
   };
 
-  const handleAddColumn = () => {
-    setColumns([...columns, { title: '', rows: [] }]);
-  };
-
-  const handleAddRow = (columnIndex) => {
-    const updatedColumns = [...columns];
-    const dayColumnIndex = 0;
-
-    if (updatedColumns[dayColumnIndex].rows.length < updatedColumns[columnIndex].rows.length + 1) {
-      updatedColumns[dayColumnIndex].rows.push(updatedColumns[dayColumnIndex].rows.length + 1);
-    }
-
-    updatedColumns[columnIndex].rows.push('');
-    setColumns(updatedColumns);
-  };
-
-  const handleColumnTitleChange = (e, columnIndex) => {
-    const updatedColumns = [...columns];
-    updatedColumns[columnIndex].title = e.target.value;
-    setColumns(updatedColumns);
-  };
-
-  const handleRowDataChange = (e, columnIndex, rowIndex) => {
-    const updatedColumns = [...columns];
-    updatedColumns[columnIndex].rows[rowIndex] = e.target.value;
-    setColumns(updatedColumns);
-  };
-
   return (
     <div className="container">
       <h2 className="my-4 text-center">Scheduler</h2>
 
-      <div className="row mb-3">
-        <div className="col-md-6">
-          <label htmlFor="goal" className="form-label">Goal</label>
-          <select
-            id="goal"
-            className="form-select"
-            value={goal}
-            onChange={(e) => setGoal(e.target.value)}
-            required
-          >
+      {/* Goal and Duration Side by Side */}
+      <div className="row">
+        <div className="col-md-6 mb-3">
+          <label className="form-label">Goal</label>
+          <select className="form-select" value={goal} onChange={(e) => setGoal(e.target.value)}>
             <option value="">Select Goal</option>
             <option value="SSC">SSC</option>
             <option value="RRB">RRB</option>
-            <option value="Banking">Banking</option>
+            <option value="BANKING">BANKING</option>
           </select>
         </div>
-        <div className="col-md-6">
-          <label htmlFor="duration" className="form-label">Duration</label>
-          <select
-            id="duration"
-            className="form-select"
-            value={duration}
-            onChange={(e) => setDuration(e.target.value)}
-            required
-          >
+        <div className="col-md-6 mb-3">
+          <label className="form-label">Duration</label>
+          <select className="form-select" value={duration} onChange={(e) => setDuration(e.target.value)}>
             <option value="">Select Duration</option>
             <option value="120-days">120 Days</option>
             <option value="150-days">150 Days</option>
@@ -88,104 +107,103 @@ const Scheduler = () => {
         </div>
       </div>
 
-      <div className="row mb-3">
-        <div className="col-md-4">
-          <label htmlFor="features" className="form-label">Features</label>
-          <textarea
-            id="features"
-            className="form-control"
-            rows="3"
-            value={features}
-            onChange={(e) => setFeatures(e.target.value)}
-            placeholder="Enter features as points or paragraph"
-            required
-          ></textarea>
-        </div>
-
-        <div className="col-md-4">
-          <label htmlFor="resources" className="form-label">Required Resources</label>
-          <textarea
-            id="resources"
-            className="form-control"
-            rows="3"
-            value={resources}
-            onChange={(e) => setResources(e.target.value)}
-            placeholder="Enter required resources"
-            required
-          ></textarea>
-        </div>
-
-        <div className="col-md-4">
-          <label htmlFor="courseInfo" className="form-label">About the Course</label>
-          <textarea
-            id="courseInfo"
-            className="form-control"
-            rows="3"
-            value={courseInfo}
-            onChange={(e) => setCourseInfo(e.target.value)}
-            placeholder="Enter course information"
-            required
-          ></textarea>
-        </div>
+      <div className="mb-3">
+        <label className="form-label">Features</label>
+        <textarea className="form-control" value={features} onChange={(e) => setFeatures(e.target.value)} />
+      </div>
+      <div className="mb-3">
+        <label className="form-label">Resources</label>
+        <textarea className="form-control" value={resources} onChange={(e) => setResources(e.target.value)} />
+      </div>
+      <div className="mb-3">
+        <label className="form-label">Course Information</label>
+        <textarea className="form-control" value={courseInfo} onChange={(e) => setCourseInfo(e.target.value)} />
       </div>
 
-      <h3 className="my-4">Course Content</h3>
-      <button className="btn btn-primary mb-3" onClick={handleAddColumn}>
-        Add New Subject
+      <h3>Subjects</h3>
+      <button className="btn btn-success mt-3" onClick={handleAddSubject}>
+        Add Subject
       </button>
-
-      <div className="table-responsive">
-        <table className="table table-bordered">
-          <thead>
-            <tr>
-              {columns.map((col, colIndex) => (
-                <th key={colIndex} className="text-center">
-                  <input
-                    type="text"
-                    placeholder={colIndex === 0 ? 'Day' : 'Enter Column Title'}
-                    className="form-control mb-2"
-                    value={col.title}
-                    readOnly={colIndex === 0}
-                    onChange={(e) => handleColumnTitleChange(e, colIndex)}
-                  />
-                  {colIndex > 0 && (
+      <div className="d-flex flex-wrap">
+        {subjects.map((subject, subjectIndex) => (
+          <div key={subjectIndex} className="border p-3 m-2" style={{ minWidth: '300px', flex: '1 1 300px' }}>
+            <label className="form-label">Subject Title</label>
+            <input
+              type="text"
+              className="form-control"
+              value={subject.title}
+              onChange={(e) => handleSubjectTitleChange(e, subjectIndex)}
+            />
+            <button className="btn btn-danger mt-2" onClick={() => handleDeleteSubject(subjectIndex)}>
+              Delete Subject
+            </button>
+            <button className="btn btn-secondary mt-2" onClick={() => handleAddDay(subjectIndex)}>
+              Add Day
+            </button>
+            {subject.dailyContents.map((day, dayIndex) => (
+              <div key={dayIndex} className="mt-3">
+                <h5>
+                  Day {day.day}{' '}
+                  <button
+                    className="btn btn-danger btn-sm ms-2"
+                    onClick={() => handleDeleteDay(subjectIndex, dayIndex)}
+                  >
+                    Delete Day
+                  </button>
+                </h5>
+                <button className="btn btn-primary mb-2" onClick={() => handleAddTopic(subjectIndex, dayIndex)}>
+                  Add Topic
+                </button>
+                {day.topics.map((topic, topicIndex) => (
+                  <div key={topicIndex} className="mb-2">
+                    <input
+                      type="text"
+                      placeholder="Topic Name"
+                      className="form-control"
+                      value={topic.name}
+                      onChange={(e) => handleTopicChange(e, subjectIndex, dayIndex, topicIndex, 'name')}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Link"
+                      className="form-control"
+                      value={topic.link}
+                      onChange={(e) => handleTopicChange(e, subjectIndex, dayIndex, topicIndex, 'link')}
+                    />
+                    <input
+                      type="number"
+                      placeholder="Hours"
+                      className="form-control"
+                      value={topic.hours}
+                      onChange={(e) => handleTopicChange(e, subjectIndex, dayIndex, topicIndex, 'hours')}
+                    />
+                    <input
+                      type="text"
+                      placeholder="PDF Name"
+                      className="form-control"
+                      value={topic.pdfName}
+                      onChange={(e) => handleTopicChange(e, subjectIndex, dayIndex, topicIndex, 'pdfName')}
+                    />
+                    <textarea
+                      placeholder="Description"
+                      className="form-control"
+                      value={topic.description}
+                      onChange={(e) => handleTopicChange(e, subjectIndex, dayIndex, topicIndex, 'description')}
+                    />
                     <button
-                      className="btn btn-secondary btn-sm mt-2"
-                      onClick={() => handleAddRow(colIndex)}
+                      className="btn btn-danger btn-sm mt-2"
+                      onClick={() => handleDeleteTopic(subjectIndex, dayIndex, topicIndex)}
                     >
-                      Add New Day
+                      Delete Topic
                     </button>
-                  )}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {columns[0].rows.map((_, rowIndex) => (
-              <tr key={rowIndex}>
-                {columns.map((col, colIndex) => (
-                  <td key={colIndex}>
-                    {colIndex === 0 ? (
-                      <span>{col.rows[rowIndex]}</span>
-                    ) : (
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Enter Row Data"
-                        value={col.rows[rowIndex] || ''}
-                        onChange={(e) => handleRowDataChange(e, colIndex, rowIndex)}
-                      />
-                    )}
-                  </td>
+                  </div>
                 ))}
-              </tr>
+              </div>
             ))}
-          </tbody>
-        </table>
+          </div>
+        ))}
       </div>
-
-      {/* Submit button moved below the table */}
-      <button onClick={handleSubmit} className="btn btn-success mt-4">
+      <button className="btn btn-primary mt-3" onClick={handleSubmit}>
         Save Schedule
       </button>
     </div>
