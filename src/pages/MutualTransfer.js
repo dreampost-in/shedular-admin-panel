@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import api from "../apiConfig/apiConfig";
+import api from "../components/apiConfig";
 
 const MutualTransferPage = () => {
   // Sample data for mutual transfer requests (you can replace this with real data or API calls)

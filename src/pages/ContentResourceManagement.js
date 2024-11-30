@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from "../apiConfig/apiConfig";
+import api from "../components/apiConfig";
 
 const ContentResourceManagement = () => {
   const navigate = useNavigate();

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import api from "../apiConfig/apiConfig";
+import api from "../components/apiConfig";
 
 const UserFeedbackPage = () => {
   // Sample feedback data (you can replace this with real data or API calls)

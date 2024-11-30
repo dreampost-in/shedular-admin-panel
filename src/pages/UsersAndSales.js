@@ -1,6 +1,6 @@
 // src/pages/UserAndSalesPage.js
 import React, { useState } from 'react';
-import api from "../apiConfig/apiConfig";
+import api from "../components/apiConfig";
 
 const UserAndSalesPage = () => {
   // Sample schedules data (you can replace it with your actual data)

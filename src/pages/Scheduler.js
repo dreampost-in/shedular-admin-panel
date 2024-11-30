@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import api from "../apiConfig/apiConfig";
+import api from "../components/apiConfig";
 
 const Scheduler = () => {
   const [goal, setGoal] = useState('');
