@@ -11,6 +11,7 @@ import Experts from './pages/Experts';
 import TransactionRecords from './pages/TransactionRecords';
 import Scheduler from './pages/Scheduler';
 import AvailableSchedules from './components/AvailableSchedules';
+import EditShedular from './pages/EditShedular';
 
 const App = () => {
   return (
@@ -28,6 +29,7 @@ const App = () => {
             <Route path="/transaction-records" element={<TransactionRecords />} />
             <Route path="/scheduler" element={<Scheduler />} />
             <Route path="/available-schedules" element={<AvailableSchedules />} /> {/* New route */}
+            <Route path="/Edit-schedules" element={<EditShedular />} /> {/* New route */}
           </Routes>
         </div>
       </div>

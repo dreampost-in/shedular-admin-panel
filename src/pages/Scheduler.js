@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import api from "../components/apiConfig";
+import { useNavigate } from 'react-router-dom';
 
 const Scheduler = () => {
   const [goal, setGoal] = useState('');
@@ -8,7 +9,9 @@ const Scheduler = () => {
   const [features, setFeatures] = useState('');
   const [resources, setResources] = useState('');
   const [courseInfo, setCourseInfo] = useState('');
+  const [maxLeaves, setMaxLeaves] = useState(0); // New state for maxLeaves
   const [subjects, setSubjects] = useState([{ title: '', dailyContents: [] }]);
+  const navigate = useNavigate();
 
   const handleAddSubject = () => {
     setSubjects([...subjects, { title: '', dailyContents: [] }]);
@@ -70,11 +73,13 @@ const Scheduler = () => {
 
   const handleSubmit = async () => {
     try {
-      const payload = { goal, duration, features, resources, courseInfo, subjects };
+      const payload = { goal, duration, features, resources, courseInfo,maxLeaves, subjects };
+      console.log(subjects)
       const response = await api.post('/course-content', payload);
 
       if (response.status === 201) {
         alert('Course content saved successfully!');
+        navigate('/Edit-schedules'); // Navigate to the Edit-schedules page
       }
     } catch (error) {
       console.error('Error submitting data:', error);
@@ -107,6 +112,16 @@ const Scheduler = () => {
         </div>
       </div>
 
+      <div className="mb-3">
+        <label className="form-label">Max Leaves</label>
+        <input
+          type="number"
+          className="form-control"
+          value={maxLeaves}
+          onChange={(e) => setMaxLeaves(e.target.value)}
+          min="0"
+        />
+      </div>
       <div className="mb-3">
         <label className="form-label">Features</label>
         <textarea className="form-control" value={features} onChange={(e) => setFeatures(e.target.value)} />
@@ -179,7 +194,7 @@ const Scheduler = () => {
                     />
                     <input
                       type="text"
-                      placeholder="PDF Name"
+                      placeholder="Add PDF Name Or Note"
                       className="form-control"
                       value={topic.pdfName}
                       onChange={(e) => handleTopicChange(e, subjectIndex, dayIndex, topicIndex, 'pdfName')}
@@ -204,7 +219,7 @@ const Scheduler = () => {
         ))}
       </div>
       <button className="btn btn-primary mt-3" onClick={handleSubmit}>
-        Save Schedule
+        Save Table
       </button>
     </div>
   );

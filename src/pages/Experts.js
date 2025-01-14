@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from "../components/apiConfig";
+import { Modal, Button, Spinner, Table } from 'react-bootstrap';
 
 const ExpertsPage = () => {
   const [experts, setExperts] = useState([]);
@@ -8,13 +9,14 @@ const ExpertsPage = () => {
     name: '',
     degree: '',
     experience: '',
+    image: null,
   });
-
-  // State to handle editing an expert
   const [isEditing, setIsEditing] = useState(false);
   const [currentExpertId, setCurrentExpertId] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [expertToDelete, setExpertToDelete] = useState(null);
 
-  // Fetch all experts on component mount
   useEffect(() => {
     fetchExperts();
   }, []);
@@ -33,28 +35,58 @@ const ExpertsPage = () => {
     setNewExpert((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleFileChange = (e) => {
+    setNewExpert({ ...newExpert, image: e.target.files[0] });
+  };
+
   const handlePublish = async () => {
+    setLoading(true);
     try {
-      const response = await api.post('/experts', newExpert);
+      const formData = new FormData();
+      formData.append('name', newExpert.name);
+      formData.append('degree', newExpert.degree);
+      formData.append('experience', newExpert.experience);
+      if (newExpert.image) formData.append('image', newExpert.image);
+
+      const response = await api.post('/experts', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
       setExperts((prev) => [...prev, response.data]);
-      setNewExpert({ name: '', degree: '', experience: '' });
-      setShowForm(false);
+      resetForm();
     } catch (error) {
       console.error('Failed to create expert:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleUpdateExpert = async () => {
+    setLoading(true);
     try {
-      const response = await api.put(`/experts/${currentExpertId}`, newExpert);
+      const formData = new FormData();
+      formData.append('name', newExpert.name);
+      formData.append('degree', newExpert.degree);
+      formData.append('experience', newExpert.experience);
+
+      if (newExpert.image instanceof File) {
+        formData.append('image', newExpert.image); // New image
+      } else if (newExpert.image) {
+        formData.append('imageUrl', newExpert.image); // Existing image URL
+      }
+
+      const response = await api.put(`/experts/${currentExpertId}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
       setExperts((prev) =>
         prev.map((expert) => (expert._id === currentExpertId ? response.data : expert))
       );
-      setNewExpert({ name: '', degree: '', experience: '' });
-      setIsEditing(false);
-      setCurrentExpertId(null);
+      resetForm();
     } catch (error) {
       console.error('Failed to update expert:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -63,35 +95,92 @@ const ExpertsPage = () => {
       name: expert.name,
       degree: expert.degree,
       experience: expert.experience,
+      image: expert.imageUrl, // Include the existing image URL
     });
     setIsEditing(true);
     setCurrentExpertId(expert._id);
     setShowForm(true);
   };
 
-  const handleRemoveExpert = async (id) => {
+  const handleRemoveExpert = async () => {
     try {
-      await api.delete(`/experts/${id}`);
-      setExperts((prev) => prev.filter((expert) => expert._id !== id));
+      await api.delete(`/experts/${expertToDelete}`);
+      setExperts((prev) => prev.filter((expert) => expert._id !== expertToDelete));
+      setShowDeleteModal(false);
+      setExpertToDelete(null);
     } catch (error) {
       console.error('Failed to delete expert:', error);
     }
   };
 
-  return (
-    <div className="container">
-      <h1>Experts</h1>
-      
-      {/* Show the Add Expert button always */}
-      <button className="btn btn-primary" onClick={() => setShowForm(true)}>
-        Add Expert
-      </button>
+  const confirmDeleteExpert = (id) => {
+    setExpertToDelete(id);
+    setShowDeleteModal(true);
+  };
 
-      {showForm && (
-        <div className="mt-4">
-          <h3>{isEditing ? 'Edit Expert' : 'Add New Expert'}</h3>
+  const resetForm = () => {
+    setNewExpert({ name: '', degree: '', experience: '', image: null });
+    setIsEditing(false);
+    setCurrentExpertId(null);
+    setShowForm(false);
+  };
+
+  return (
+    <div className="container mt-5">
+      <h1 className="mb-4">Experts</h1>
+      <Button variant="primary" onClick={() => setShowForm(true)}>
+        Add Expert
+      </Button>
+
+      <Table striped bordered hover className="mt-4">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Degree</th>
+            <th>Experience</th>
+            <th>Image</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {experts.map((expert, index) => (
+            <tr key={expert._id}>
+              <td>{index + 1}</td>
+              <td>{expert.name}</td>
+              <td>{expert.degree}</td>
+              <td>{expert.experience}</td>
+              <td>
+                {expert.imageUrl && (
+                  <img
+                    src={expert.imageUrl}
+                    alt="Expert"
+                    style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+                  />
+                )}
+              </td>
+              <td>
+                <Button variant="warning" onClick={() => handleEditExpert(expert)}>
+                  Edit
+                </Button>{' '}
+                <Button variant="danger" onClick={() => confirmDeleteExpert(expert._id)}>
+                  Remove
+                </Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+
+      <Modal show={showForm} onHide={resetForm}>
+        <Modal.Header closeButton>
+          <Modal.Title>{isEditing ? 'Edit Expert' : 'Add New Expert'}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
           <div className="mb-3">
-            <label htmlFor="name" className="form-label">Name</label>
+            <label htmlFor="name" className="form-label">
+              Name
+            </label>
             <input
               type="text"
               className="form-control"
@@ -102,7 +191,9 @@ const ExpertsPage = () => {
             />
           </div>
           <div className="mb-3">
-            <label htmlFor="degree" className="form-label">Degree</label>
+            <label htmlFor="degree" className="form-label">
+              Degree
+            </label>
             <input
               type="text"
               className="form-control"
@@ -113,7 +204,9 @@ const ExpertsPage = () => {
             />
           </div>
           <div className="mb-3">
-            <label htmlFor="experience" className="form-label">Experience</label>
+            <label htmlFor="experience" className="form-label">
+              Experience
+            </label>
             <input
               type="text"
               className="form-control"
@@ -123,40 +216,39 @@ const ExpertsPage = () => {
               onChange={handleInputChange}
             />
           </div>
-          <button className="btn btn-success" onClick={isEditing ? handleUpdateExpert : handlePublish}>
-            {isEditing ? 'Update Expert' : 'Publish Expert'}
-          </button>
-        </div>
-      )}
+          <div className="mb-3">
+            <label htmlFor="image" className="form-label">
+              Image
+            </label>
+            <input type="file" className="form-control" onChange={handleFileChange} />
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={resetForm}>
+            Close
+          </Button>
+          <Button variant="success" onClick={isEditing ? handleUpdateExpert : handlePublish} disabled={loading}>
+            {loading ? (
+              <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+            ) : isEditing ? 'Update Expert' : 'Publish Expert'}
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
-      {experts.length > 0 && (
-        <div className="mt-4">
-          <h3>Experts List</h3>
-          <ul className="list-group">
-            {experts.map((expert) => (
-              <li key={expert._id} className="list-group-item">
-                <div>
-                  <strong>{expert.name}</strong>
-                  <p>Degree: {expert.degree}</p>
-                  <p>Experience: {expert.experience}</p>
-                </div>
-                <button
-                  className="btn btn-warning"
-                  onClick={() => handleEditExpert(expert)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="btn btn-danger"
-                  onClick={() => handleRemoveExpert(expert._id)}
-                >
-                  Remove
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Delete</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Are you sure you want to delete this expert?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleRemoveExpert}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
