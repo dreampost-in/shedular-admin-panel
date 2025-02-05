@@ -12,6 +12,7 @@ const AvailableSchedules = () => {
       try {
         const response = await api.get('/schedule/available');
         setSchedules(response.data);
+        console.log(response.data,"shedules")
       } catch (error) {
         console.error('Error fetching schedules:', error);
       }
@@ -21,6 +22,8 @@ const AvailableSchedules = () => {
       try {
         const response = await api.get('/coursecontent/goals');
         setCourseContentOptions(response.data);
+        console.log(response.data,"coursecontent")
+
       } catch (error) {
         console.error('Error fetching course content:', error);
       }
@@ -33,11 +36,11 @@ const AvailableSchedules = () => {
   const getExamOptions = (goal) => {
     switch (goal) {
       case 'SSC':
-        return ['CGL', 'CPO', 'CHSL', 'MTS', 'GD'];
+        return ['CGL', 'CPO', 'CHSL', 'MTS', 'GD',"Dont Care"];
       case 'RRB':
-        return ['NTPC', 'ALP', 'JE', 'Group-D'];
+        return ['NTPC', 'ALP', 'JE', 'Group-D',"Dont Care"];
       case 'BANKING':
-        return ['PO', 'Clerk'];
+        return ['PO', 'Clerk',"Dont Care"];
       default:
         return [];
     }
@@ -61,6 +64,7 @@ const AvailableSchedules = () => {
       goalId,
       goal: selectedGoal?.goal,
       duration: selectedGoal?.duration,
+      hrsanddays: selectedGoal?.hrsanddays,
       exam: updatedExams.length > 0 ? updatedExams[0] : '',
     });
   };
@@ -101,12 +105,12 @@ const AvailableSchedules = () => {
         <thead>
           <tr>
             <th>Table</th>
-            <th>Exam</th>
+            {/* <th>Exam</th> */}
             <th>Category</th>
             <th>Price</th>
             <th>Duration</th>
             <th>Hours & Days</th>
-            <th>Stage</th>
+            {/* <th>Stage</th> */}
             <th>Action</th>
           </tr>
         </thead>
@@ -127,7 +131,7 @@ const AvailableSchedules = () => {
                       ))}
                     </select>
                   </td>
-                  <td>
+                  {/* <td>
                     <select
                       value={editedSchedule.exam || ''}
                       onChange={(e) => handleFieldChange('exam', e.target.value)}
@@ -138,13 +142,13 @@ const AvailableSchedules = () => {
                         </option>
                       ))}
                     </select>
-                  </td>
+                  </td> */}
                   <td>
                     <select
                       value={editedSchedule.category}
                       onChange={(e) => handleFieldChange('category', e.target.value)}
                     >
-                      {['FRESHER', 'REPEATER', 'BOTH'].map((option) => (
+                      {['FRESHER', 'REPEATER', 'BOTH',"Dont Care"].map((option) => (
                         <option key={option} value={option}>
                           {option}
                         </option>
@@ -159,30 +163,31 @@ const AvailableSchedules = () => {
                     />
                   </td>
                   <td>{editedSchedule.duration}</td>
-                  <td>
+                  <td>{editedSchedule.hrsanddays}</td>
+                  {/* <td>
                     <select
                       value={editedSchedule.hrsanddays}
                       onChange={(e) => handleFieldChange('hrsanddays', e.target.value)}
                     >
-                      {['<5', '>5'].map((option) => (
+                      {['<5', '>5',"Dont Care"].map((option) => (
                         <option key={option} value={option}>
                           {option}
                         </option>
                       ))}
                     </select>
-                  </td>
-                  <td>
+                  </td> */}
+                  {/* <td>
                     <select
                       value={editedSchedule.stage}
                       onChange={(e) => handleFieldChange('stage', e.target.value)}
                     >
-                      {['PRELIMS', 'MAINS', 'PRELIMS+MAINS'].map((option) => (
+                      {['PRELIMS', 'MAINS', 'PRELIMS+MAINS',"Dont Care"].map((option) => (
                         <option key={option} value={option}>
                           {option}
                         </option>
                       ))}
                     </select>
-                  </td>
+                  </td> */}
                   <td>
                     <button className="btn btn-success" onClick={handleSave}>
                       Save
@@ -195,12 +200,12 @@ const AvailableSchedules = () => {
               ) : (
                 <>
                   <td>{schedule.goalId.goal}</td>
-                  <td>{schedule.exam}</td>
+                  {/* <td>{schedule.exam}</td> */}
                   <td>{schedule.category}</td>
                   <td>{schedule.price}</td>
                   <td>{schedule.goalId.duration}</td>
-                  <td>{schedule.hrsanddays}</td>
-                  <td>{schedule.stage}</td>
+                  <td>{schedule.goalId.hrsanddays}</td>
+                  {/* <td>{schedule.stage}</td> */}
                   <td>
                     <button
                       className="btn btn-primary"

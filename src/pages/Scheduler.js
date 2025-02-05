@@ -10,6 +10,7 @@ const Scheduler = () => {
   const [resources, setResources] = useState('');
   const [courseInfo, setCourseInfo] = useState('');
   const [maxLeaves, setMaxLeaves] = useState(0); // New state for maxLeaves
+  const [hrsanddays, sethrsanddays] = useState(''); // New state for hours/days field
   const [subjects, setSubjects] = useState([{ title: '', dailyContents: [] }]);
   const navigate = useNavigate();
 
@@ -73,7 +74,7 @@ const Scheduler = () => {
 
   const handleSubmit = async () => {
     try {
-      const payload = { goal, duration, features, resources, courseInfo,maxLeaves, subjects };
+      const payload = { goal, duration, features, resources, courseInfo,maxLeaves,hrsanddays, subjects };
       console.log(subjects)
       const response = await api.post('/course-content', payload);
 
@@ -106,8 +107,10 @@ const Scheduler = () => {
           <label className="form-label">Duration</label>
           <select className="form-select" value={duration} onChange={(e) => setDuration(e.target.value)}>
             <option value="">Select Duration</option>
-            <option value="120-days">120 Days</option>
-            <option value="150-days">150 Days</option>
+            <option value="60-days">60 Days</option>
+                <option value="90-days">90 Days</option>
+                <option value="150-days">150 Days</option>
+                <option value="200-days">200 Days</option>
           </select>
         </div>
       </div>
@@ -120,6 +123,16 @@ const Scheduler = () => {
           value={maxLeaves}
           onChange={(e) => setMaxLeaves(e.target.value)}
           min="0"
+        />
+      </div>
+      <div className="mb-3">
+        <label className="form-label">Hours/Days</label>
+        <input
+          type="text"
+          className="form-control"
+          value={hrsanddays}
+          onChange={(e) => sethrsanddays(e.target.value)}
+          placeholder="Enter hours/days"
         />
       </div>
       <div className="mb-3">

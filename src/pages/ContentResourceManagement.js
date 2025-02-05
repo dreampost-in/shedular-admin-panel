@@ -7,10 +7,10 @@ const ContentResourceManagement = () => {
   const [newSchedule, setNewSchedule] = useState({
     goalId: "",
     goal: "",
-    exam: "",
+    // exam: "",
     category: "",
-    hrsanddays: "",
-    stage: "",
+    // hrsanddays: "",
+    // stage: "",
     price: "",
   });
   const [goalOptions, setGoalOptions] = useState([]);
@@ -32,19 +32,19 @@ const ContentResourceManagement = () => {
   const getExamOptions = (goal) => {
     switch (goal) {
       case "SSC":
-        return ["CGL", "CPO", "CHSL", "MTS", "GD"];
+        return ["CGL", "CPO", "CHSL", "MTS", "GD","Dont Care"];
       case "RRB":
-        return ["NTPC", "ALP", "JE", "Group-D"];
+        return ["NTPC", "ALP", "JE", "Group-D","Dont Care"];
       case "BANKING":
-        return ["PO", "Clerk"];
+        return ["PO", "Clerk","Dont Care"];
       default:
         return [];
     }
   };
 
-  const getCategoryOptions = () => ["FRESHER", "REPEATER", "BOTH"];
-  const getHrsAndDaysOptions = () => ["<5", ">5"];
-  const getStageOptions = () => ["PRELIMS", "MAINS", "PRELIMS+MAINS"];
+  const getCategoryOptions = () => ["FRESHER", "REPEATER", "BOTH","Dont Care"];
+  const getHrsAndDaysOptions = () => ["<5", ">5","Dont Care"];
+  const getStageOptions = () => ["PRELIMS", "MAINS", "PRELIMS+MAINS","Dont Care"];
 
   // Handle input changes in the form
   const handleInputChange = (e) => {
@@ -75,10 +75,10 @@ const ContentResourceManagement = () => {
       setNewSchedule({
         goalId: "",
         goal: "",
-        exam: "",
+        // exam: "",
         category: "",
-        hrsanddays: "",
-        stage: "",
+        // hrsanddays: "",
+        // stage: "",
         price: "",
       });
     } catch (error) {
@@ -97,7 +97,7 @@ const ContentResourceManagement = () => {
 
       {step === 1 && (
         <div>
-          <h3 className="text-secondary">Step 1: Select a Goal</h3>
+          <h3 className="text-secondary">Step 1: Select a Table</h3>
           <div className="row">
             {goalOptions.map((goal) => (
               <div
@@ -123,7 +123,7 @@ const ContentResourceManagement = () => {
         <div>
           <h3 className="text-secondary">Step 2: Fill in the Details</h3>
           <div className="row mb-3">
-            <div className="col-md-3">
+            {/* <div className="col-md-3">
               <label className="form-label text-muted">Exam</label>
               <select
                 className="form-select"
@@ -138,7 +138,7 @@ const ContentResourceManagement = () => {
                   </option>
                 ))}
               </select>
-            </div>
+            </div> */}
             <div className="col-md-3">
               <label className="form-label text-muted">Category</label>
               <select
@@ -155,7 +155,7 @@ const ContentResourceManagement = () => {
                 ))}
               </select>
             </div>
-            <div className="col-md-3">
+            {/* <div className="col-md-3">
               <label className="form-label text-muted">Hours/Days</label>
               <select
                 className="form-select"
@@ -170,8 +170,8 @@ const ContentResourceManagement = () => {
                   </option>
                 ))}
               </select>
-            </div>
-            <div className="col-md-3">
+            </div> */}
+            {/* <div className="col-md-3">
               <label className="form-label text-muted">Stage</label>
               <select
                 className="form-select"
@@ -186,7 +186,7 @@ const ContentResourceManagement = () => {
                   </option>
                 ))}
               </select>
-            </div>
+            </div> */}
           </div>
           <div className="row mb-3">
             <div className="col-md-3">

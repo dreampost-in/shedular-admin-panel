@@ -12,6 +12,7 @@ const EditScheduler = () => {
   const [resources, setResources] = useState('');
   const [courseInfo, setCourseInfo] = useState('');
   const [subjects, setSubjects] = useState([]);
+  const [hrsanddays, sethrsanddays] = useState(''); // New state for hours/days field\
   const [goal, setGoal] = useState('');
   const [duration, setDuration] = useState('');
   const [maxLeaves, setMaxLeaves] = useState(''); // New state for maxLeaves
@@ -20,6 +21,7 @@ const EditScheduler = () => {
   const [goalToDelete, setGoalToDelete] = useState(null); // State for goal to delete
   const [viewCourseContent, setViewCourseContent] = useState(null); // For viewing data
   const [showViewModal, setShowViewModal] = useState(false); // State for view modal
+  const [linkStatuses, setLinkStatuses] = useState({}); // Store the validity of links
 
   useEffect(() => {
     const fetchCourseContentOptions = async () => {
@@ -39,6 +41,7 @@ const EditScheduler = () => {
       setCourseContent(response.data.data);
       setDuration(response.data.data.duration);
       setMaxLeaves(response.data.data.maxLeaves);
+      sethrsanddays(response.data.data.hrsanddays);
       setGoal(response.data.data.goal);
       setFeatures(response.data.data.features);
       setResources(response.data.data.resources);
@@ -110,7 +113,7 @@ const EditScheduler = () => {
 
   const handleSubmit = async () => {
     try {
-      const payload = { goal, duration, features, resources, courseInfo,maxLeaves, subjects };
+      const payload = { goal, duration, features, resources, courseInfo,maxLeaves,hrsanddays, subjects };
       console.log(subjects)
       const response = await api.put(`/course-content/${selectedGoalDuration}`, payload);
       if (response.status === 200) {
@@ -167,7 +170,47 @@ const EditScheduler = () => {
     const handleAddScheduleClick = () => {
       navigate('/scheduler');
     };
-
+    const checkYouTubeLink = async (url) => {
+      console.log("Checking URL:", url); // Log the URL being checked
+  
+      const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[a-zA-Z0-9_-]{11}$/;
+      if (!youtubeRegex.test(url)) {
+        console.log("Invalid YouTube URL format");
+        return false; // Invalid YouTube URL format
+      }
+  
+      try {
+        console.log("Fetching URL to check if it is valid...");
+        const response = await fetch(url, { method: "HEAD" });
+  
+        console.log("Fetch response status:", response.status);
+        console.log("Fetch response ok:", response.ok);
+  
+        return response.ok; // If the response is OK, the link is valid
+      } catch (error) {
+        console.error("Error fetching the URL:", error);
+        return false; // If fetch fails, the link is broken
+      }
+    };
+    useEffect(() => {
+      const checkAllLinks = async () => {
+        const statuses = {};
+        for (const subject of viewCourseContent.subjects) {
+          for (const content of subject.dailyContents) {
+            for (const topic of content.topics) {
+              const isValid = await checkYouTubeLink(topic.link);
+              statuses[topic.link] = isValid;
+            }
+          }
+        }
+        setLinkStatuses(statuses);
+      };
+  
+      if (viewCourseContent?.subjects) {
+        checkAllLinks();
+      }
+    }, [viewCourseContent]);
+  
   return (
 <div className="container">
   <div className="d-flex justify-content-between align-items-center my-4">
@@ -237,48 +280,87 @@ const EditScheduler = () => {
         <div className="modal-body">
           {viewCourseContent ? (
             <div>
-              {/* Basic Course Details */}
+              {/* Course Overview */}
               <h6 className="mb-3">Course Overview</h6>
-              <p><strong>Goal:</strong> {viewCourseContent.goal}</p>
-              <p><strong>Duration:</strong> {viewCourseContent.duration}</p>
-              <p><strong>Max Leaves:</strong> {viewCourseContent.maxLeaves}</p> {/* Max Leaves */}
-              <p><strong>Features:</strong> {viewCourseContent.features}</p>
-              <p><strong>Resources:</strong> {viewCourseContent.resources}</p>
-              <p><strong>Course Info:</strong> {viewCourseContent.courseInfo}</p>
+              <table className="table table-bordered table-striped">
+                <tbody>
+                  <tr>
+                    <th>Goal</th>
+                    <td>{viewCourseContent.goal}</td>
+                  </tr>
+                  <tr>
+                    <th>Duration</th>
+                    <td>{viewCourseContent.duration}</td>
+                  </tr>
+                  <tr>
+                    <th>Max Leaves</th>
+                    <td>{viewCourseContent.maxLeaves}</td>
+                  </tr>
+                  <tr>
+                    <th>Hours/Days</th>
+                    <td>{viewCourseContent.hrsanddays}</td>
+                  </tr>
+                  <tr>
+                    <th>Features</th>
+                    <td>{viewCourseContent.features}</td>
+                  </tr>
+                  <tr>
+                    <th>Resources</th>
+                    <td>{viewCourseContent.resources}</td>
+                  </tr>
+                  <tr>
+                    <th>Course Info</th>
+                    <td>{viewCourseContent.courseInfo}</td>
+                  </tr>
+                </tbody>
+              </table>
 
-              {/* Subjects and Daily Contents */}
-              <div className="mt-4">
-                <h6>Subjects</h6>
-                {viewCourseContent.subjects.map((subject, subjectIndex) => (
-                  <div key={subjectIndex} className="mb-3">
-                    <p className="fw-bold">Subject: {subject.title}</p>
-                    <p><strong>Description:</strong> {subject.description}</p> {/* Subject Description */}
-                    
-                    <h6>Daily Contents:</h6>
-                    <ul className="list-unstyled">
+              {/* Subjects */}
+              <h6 className="mt-4">Subjects</h6>
+              {viewCourseContent.subjects.map((subject, subjectIndex) => (
+                <div key={subjectIndex} className="mb-3">
+                  <h6 className="text-primary">{subject.title}</h6>
+                  <table className="table table-bordered table-striped">
+                    <thead>
+                      <tr>
+                        <th>Day</th>
+                        <th>Topic</th>
+                        <th>Description</th>
+                        <th>Hours</th>
+                        <th>Link</th>
+                        <th>PDF Name</th>
+                      </tr>
+                    </thead>
+                    <tbody>
                       {subject.dailyContents.map((content, contentIndex) => (
-                        <li key={contentIndex} className="mb-2">
-                          <strong>Day {content.day}:</strong>
-                          <ul>
-                            {content.topics.map((topic, topicIndex) => (
-                              <li key={topicIndex}>
-                                <strong>Topic:</strong> {topic.name} 
-                                <span> ({topic.hours} hours)</span>
-                                <br />
-                                <span> Link: {topic.link} </span>
-                                <br />
-                                <span> Note: {topic.pdfName} </span>
-                                <br />
-                                <span> Description: {topic.description} </span>
-                              </li>
-                            ))}
-                          </ul>
-                        </li>
+                        content.topics.map((topic, topicIndex) => (
+                          <tr key={`${contentIndex}-${topicIndex}`}>
+                            <td>Day {content.day}</td>
+                            <td>{topic.name}</td>
+                            <td>{topic.description}</td>
+                            <td>{topic.hours}</td>
+                            <td>
+                      {topic.link ? (
+                        <a
+                          href={topic.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: linkStatuses[topic.link] ? 'blue' : 'red' }} // Red if broken
+                        >
+                          View Link
+                        </a>
+                      ) : (
+                        'N/A'
+                      )}
+                    </td>
+                            <td>{topic.pdfName || 'N/A'}</td>
+                          </tr>
+                        ))
                       ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
+                    </tbody>
+                  </table>
+                </div>
+              ))}
             </div>
           ) : (
             <p>Loading...</p>
@@ -297,6 +379,7 @@ const EditScheduler = () => {
     </div>
   </div>
 )}
+
 
    {showConfirmModal && (
         <div className="modal show d-block" tabIndex="-1" role="dialog">
@@ -339,8 +422,10 @@ const EditScheduler = () => {
               <label className="form-label">Duration</label>
               <select className="form-select" value={duration} onChange={(e) => setDuration(e.target.value)}>
                 <option value="">Select Duration</option>
-                <option value="120-days">120 Days</option>
+                <option value="60-days">60 Days</option>
+                <option value="90-days">90 Days</option>
                 <option value="150-days">150 Days</option>
+                <option value="200-days">200 Days</option>
               </select>
             </div>
           </div>
@@ -353,6 +438,16 @@ const EditScheduler = () => {
               onChange={(e) => setMaxLeaves(e.target.value)}
             />
           </div>
+          <div className="mb-3">
+        <label className="form-label">Hours/Days</label>
+        <input
+          type="text"
+          className="form-control"
+          value={hrsanddays}
+          onChange={(e) => sethrsanddays(e.target.value)}
+          placeholder="Enter hours/days"
+        />
+      </div>
           <div className="mb-3">
             <label className="form-label">Features</label>
             <textarea
