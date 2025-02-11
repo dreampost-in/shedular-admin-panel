@@ -148,7 +148,7 @@ const AvailableSchedules = () => {
                       value={editedSchedule.category}
                       onChange={(e) => handleFieldChange('category', e.target.value)}
                     >
-                      {['FRESHER', 'REPEATER', 'BOTH',"Dont Care"].map((option) => (
+                      {['FRESHER', 'REPEATER'].map((option) => (
                         <option key={option} value={option}>
                           {option}
                         </option>

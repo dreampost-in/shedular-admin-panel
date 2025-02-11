@@ -42,7 +42,8 @@ const ContentResourceManagement = () => {
     }
   };
 
-  const getCategoryOptions = () => ["FRESHER", "REPEATER", "BOTH","Dont Care"];
+  // const getCategoryOptions = () => ["FRESHER", "REPEATER", "BOTH","Dont Care"];
+  const getCategoryOptions = () => ["FRESHER", "REPEATER"];
   const getHrsAndDaysOptions = () => ["<5", ">5","Dont Care"];
   const getStageOptions = () => ["PRELIMS", "MAINS", "PRELIMS+MAINS","Dont Care"];
 
