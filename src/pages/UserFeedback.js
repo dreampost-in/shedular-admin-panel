@@ -1,67 +1,120 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from "react";
 import api from "../components/apiConfig";
 
 const UserFeedbackPage = () => {
-  // Sample feedback data (you can replace this with real data or API calls)
-  const [feedbacks, setFeedbacks] = useState([
-    { id: 1, username: 'John Doe', feedback: 'Great app, very user-friendly!', status: 'Pending' },
-    { id: 2, username: 'Jane Smith', feedback: 'Needs more features for restaurant owners.', status: 'Pending' },
-    { id: 3, username: 'Mary Johnson', feedback: 'The app is crashing when I try to order.', status: 'Pending' },
-    { id: 4, username: 'James Brown', feedback: 'Overall good experience.', status: 'Pending' },
-  ]);
+  const [feedbacks, setFeedbacks] = useState([]);
+  const [filter, setFilter] = useState("all");
 
-  // Function to handle feedback approval
-  const handleApprove = (id) => {
-    setFeedbacks(feedbacks.map(feedback =>
-      feedback.id === id ? { ...feedback, status: 'Approved' } : feedback
-    ));
+  // Fetch all feedback
+  useEffect(() => {
+    const fetchFeedback = async () => {
+      try {
+        const response = await api.get("/feedback");
+        setFeedbacks(response.data);
+      } catch (error) {
+        console.error("Error fetching feedbacks:", error);
+      }
+    };
+    fetchFeedback();
+  }, []);
+
+  // Function to publish/unpublish feedback
+  const togglePublish = async (id, isPublished) => {
+    try {
+      await api.put(`/feedback/publish/${id}`, { isPublished: !isPublished });
+      setFeedbacks(feedbacks.map((f) => (f._id === id ? { ...f, isPublished: !isPublished } : f)));
+    } catch (error) {
+      console.error("Error updating feedback status:", error);
+    }
   };
 
-  // Function to handle feedback rejection
-  const handleReject = (id) => {
-    setFeedbacks(feedbacks.map(feedback =>
-      feedback.id === id ? { ...feedback, status: 'Rejected' } : feedback
-    ));
+  // Function to delete feedback
+  const handleDelete = async (id) => {
+    try {
+      await api.delete(`/feedback/${id}`);
+      setFeedbacks(feedbacks.filter((f) => f._id !== id));
+    } catch (error) {
+      console.error("Error deleting feedback:", error);
+    }
   };
+
+  // Filtered feedback list
+  const filteredFeedbacks = feedbacks.filter((feedback) => {
+    if (filter === "all") return true;
+    return filter === "published" ? feedback.isPublished : !feedback.isPublished;
+  });
 
   return (
-    <div className="container">
-      <h1>User Feedbacks</h1>
+    <div className="container mx-auto p-6">
+      <h1 className="text-3xl font-bold text-green-700 mb-6">User Feedback</h1>
 
-      {/* Table to Display Feedbacks */}
-      <table className="table">
+      {/* Filter Buttons */}
+      <div className="flex space-x-4 mb-6">
+        <button
+          className={`px-5 py-2 font-semibold rounded-lg transition ${
+            filter === "all" ? "bg-blue-600 text-black" : "bg-gray-300 text-gray-800"
+          }`}
+          onClick={() => setFilter("all")}
+        >
+          All Feedbacks
+        </button>
+        <button
+          className={`px-5 py-2 font-semibold rounded-lg transition ${
+            filter === "published" ? "bg-green-600 text-black" : "bg-gray-300 text-gray-800"
+          }`}
+          onClick={() => setFilter("published")}
+        >
+          Published
+        </button>
+        <button
+          className={`px-5 py-2 font-semibold rounded-lg transition ${
+            filter === "not_published" ? "bg-orange-600 text-black" : "bg-gray-300 text-gray-800"
+          }`}
+          onClick={() => setFilter("not_published")}
+        >
+          Not Published
+        </button>
+      </div>
+
+      <table className="min-w-full bg-white border border-gray-300 shadow-lg rounded-lg">
         <thead>
-          <tr>
-            <th scope="col">Username</th>
-            <th scope="col">Feedback</th>
-            <th scope="col">Status</th>
-            <th scope="col">Action</th>
+          <tr className="bg-gray-100 text-gray-800 font-semibold text-center">
+            <th className="py-3 px-4 border">Name</th>
+            <th className="py-3 px-4 border">Rating</th>
+            <th className="py-3 px-4 border">Feedback</th>
+            <th className="py-3 px-4 border">Status</th>
+            <th className="py-3 px-4 border">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {feedbacks.map((feedback) => (
-            <tr key={feedback.id}>
-              <td>{feedback.username}</td>
-              <td>{feedback.feedback}</td>
-              <td>
-                <span className={`badge ${feedback.status === 'Approved' ? 'bg-success' : feedback.status === 'Rejected' ? 'bg-danger' : 'bg-warning'}`}>
-                  {feedback.status}
+          {filteredFeedbacks.map((feedback) => (
+            <tr key={feedback._id} className="border-t text-center">
+              <td className="py-3 px-4 border font-medium text-gray-900">{feedback.name}</td>
+              <td className="py-3 px-4 border text-lg font-bold text-blue-700">{feedback.rating}</td>
+              <td className="py-3 px-4 border text-gray-800">{feedback.feedback}</td>
+              <td className="py-3 px-4 border">
+                <span
+                  className={`px-3 py-1 rounded-lg text-black font-semibold ${
+                    feedback.isPublished ? "bg-green-500" : "bg-orange-500"
+                  }`}
+                >
+                  {feedback.isPublished ? "Published" : "Not Published"}
                 </span>
               </td>
-              <td>
-                <button 
-                  className="btn btn-success me-2" 
-                  onClick={() => handleApprove(feedback.id)}
-                  disabled={feedback.status !== 'Pending'}
+              <td className="py-3 px-4 border flex justify-center space-x-3">
+                <button
+                  className={`px-4 py-2 font-semibold rounded-lg transition text-black ${
+                    feedback.isPublished ? "bg-red-600 hover:bg-red-700" : "bg-green-600 hover:bg-green-700"
+                  }`}
+                  onClick={() => togglePublish(feedback._id, feedback.isPublished)}
                 >
-                  Approve
+                  {feedback.isPublished ? "Unpublish" : "Publish"}
                 </button>
-                <button 
-                  className="btn btn-danger"
-                  onClick={() => handleReject(feedback.id)}
-                  disabled={feedback.status !== 'Pending'}
+                <button
+                  className="px-4 py-2 font-semibold bg-gray-700 hover:bg-gray-800 text-black rounded-lg transition"
+                  onClick={() => handleDelete(feedback._id)}
                 >
-                  Reject
+                  Delete
                 </button>
               </td>
             </tr>

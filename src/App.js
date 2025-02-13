@@ -12,6 +12,9 @@ import TransactionRecords from './pages/TransactionRecords';
 import Scheduler from './pages/Scheduler';
 import AvailableSchedules from './components/AvailableSchedules';
 import EditShedular from './pages/EditShedular';
+import Hiring from './pages/Hiring';
+import Contactus from './pages/contactus';
+import AdminStatistics from './pages/AdminStatistics';
 
 const App = () => {
   return (
@@ -30,6 +33,9 @@ const App = () => {
             <Route path="/scheduler" element={<Scheduler />} />
             <Route path="/available-schedules" element={<AvailableSchedules />} /> {/* New route */}
             <Route path="/Edit-schedules" element={<EditShedular />} /> {/* New route */}
+            <Route path="/Hiring-records" element={<Hiring />} /> {/* New route */}
+            <Route path="/Contactus" element={<Contactus />} /> {/* New route */}
+            <Route path="/AdminStatistics" element={<AdminStatistics />} /> {/* New route */}
           </Routes>
         </div>
       </div>

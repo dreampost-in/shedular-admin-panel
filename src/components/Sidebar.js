@@ -16,6 +16,9 @@ const Sidebar = () => {
         <Link className="nav-link" to="/user-feedback">User Feedback</Link>
         <Link className="nav-link" to="/experts">Experts</Link>
         <Link className="nav-link" to="/transaction-records">Transaction Records</Link>
+        <Link className="nav-link" to="/Hiring-records">Hiring Records</Link>
+        <Link className="nav-link" to="/Contactus">Contact Us</Link>
+        <Link className="nav-link" to="/AdminStatistics">AdminStatistics</Link>
       </nav>
     </div>
   );
