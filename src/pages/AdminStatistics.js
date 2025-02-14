@@ -80,16 +80,16 @@ const AdminStatistics = () => {
           </thead>
           <tbody>
             <tr>
-              <td className="border p-3 font-medium">Success Rate</td>
-              <td className="border p-3">{stats.successRate}%</td>
+              <td className="border p-3 font-medium">Schedules</td>
+              <td className="border p-3">{stats.schedules}</td>
             </tr>
             <tr className="bg-gray-100">
               <td className="border p-3 font-medium">Happy Students</td>
               <td className="border p-3">{stats.happyStudents}</td>
             </tr>
             <tr>
-              <td className="border p-3 font-medium">Schedules</td>
-              <td className="border p-3">{stats.schedules}</td>
+              <td className="border p-3 font-medium">Mutual Matches</td>
+              <td className="border p-3">{stats.successRate}</td>
             </tr>
           </tbody>
         </table>
@@ -99,9 +99,10 @@ const AdminStatistics = () => {
       <div className="bg-white p-6 shadow-md rounded-lg mt-6">
         <h3 className="text-xl font-semibold mb-4"> Update Statistics</h3>
         <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4">
-          <label className="block">
-            <span className="text-gray-700">Success Rate (%):</span>
-            <input type="text" name="successRate" value={stats.successRate} onChange={handleChange} className="w-full p-2 border rounded" />
+          
+        <label className="block">
+            <span className="text-gray-700">Schedules:</span>
+            <input type="text" name="schedules" value={stats.schedules} onChange={handleChange} className="w-full p-2 border rounded" />
           </label>
 
           <label className="block">
@@ -110,8 +111,8 @@ const AdminStatistics = () => {
           </label>
 
           <label className="block">
-            <span className="text-gray-700">Schedules:</span>
-            <input type="text" name="schedules" value={stats.schedules} onChange={handleChange} className="w-full p-2 border rounded" />
+            <span className="text-gray-700">Mutual Matches:</span>
+            <input type="text" name="successRate" value={stats.successRate} onChange={handleChange} className="w-full p-2 border rounded" />
           </label>
 
           <div className="flex gap-3">

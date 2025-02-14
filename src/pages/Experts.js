@@ -54,6 +54,8 @@ const ExpertsPage = () => {
 
       setExperts((prev) => [...prev, response.data]);
       resetForm();
+      fetchExperts();
+
     } catch (error) {
       console.error('Failed to create expert:', error);
     } finally {
@@ -83,6 +85,8 @@ const ExpertsPage = () => {
         prev.map((expert) => (expert._id === currentExpertId ? response.data : expert))
       );
       resetForm();
+      fetchExperts();
+
     } catch (error) {
       console.error('Failed to update expert:', error);
     } finally {
@@ -145,7 +149,7 @@ const ExpertsPage = () => {
         </thead>
         <tbody>
           {experts.map((expert, index) => (
-            <tr key={expert._id}>
+    <tr key={expert._id || index}> {/* Ensure key is unique */}
               <td>{index + 1}</td>
               <td>{expert.name}</td>
               <td>{expert.degree}</td>
