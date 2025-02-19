@@ -17,11 +17,17 @@ const Scheduler = () => {
   const handleAddSubject = () => {
     setSubjects([...subjects, { title: '', dailyContents: [] }]);
   };
-
   const handleDeleteSubject = (subjectIndex) => {
-    const updatedSubjects = subjects.filter((_, index) => index !== subjectIndex);
-    setSubjects(updatedSubjects);
+    if (window.confirm("Are you sure you want to delete this subject?")) {
+      const updatedSubjects = subjects.filter((_, index) => index !== subjectIndex);
+      setSubjects(updatedSubjects);
+    }
   };
+  
+  // const handleDeleteSubject = (subjectIndex) => {
+  //   const updatedSubjects = subjects.filter((_, index) => index !== subjectIndex);
+  //   setSubjects(updatedSubjects);
+  // };
 
   const handleSubjectTitleChange = (e, subjectIndex) => {
     const updatedSubjects = [...subjects];

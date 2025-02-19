@@ -66,9 +66,16 @@ const EditScheduler = () => {
   };
 
   const handleDeleteSubject = (subjectIndex) => {
-    const updatedSubjects = subjects.filter((_, index) => index !== subjectIndex);
-    setSubjects(updatedSubjects);
+    if (window.confirm("Are you sure you want to delete this subject?")) {
+      const updatedSubjects = subjects.filter((_, index) => index !== subjectIndex);
+      setSubjects(updatedSubjects);
+    }
   };
+  
+  // const handleDeleteSubject = (subjectIndex) => {
+  //   const updatedSubjects = subjects.filter((_, index) => index !== subjectIndex);
+  //   setSubjects(updatedSubjects);
+  // };
 
   const handleAddDay = (subjectIndex) => {
     const updatedSubjects = [...subjects];
