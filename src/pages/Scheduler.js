@@ -171,9 +171,9 @@ const Scheduler = () => {
             <button className="btn btn-danger mt-2" onClick={() => handleDeleteSubject(subjectIndex)}>
               Delete Subject
             </button>
-            <button className="btn btn-secondary mt-2" onClick={() => handleAddDay(subjectIndex)}>
+            {/* <button className="btn btn-secondary mt-2" onClick={() => handleAddDay(subjectIndex)}>
               Add Day
-            </button>
+            </button> */}
             {subject.dailyContents.map((day, dayIndex) => (
               <div key={dayIndex} className="mt-3">
                 <h5>
@@ -234,6 +234,9 @@ const Scheduler = () => {
                 ))}
               </div>
             ))}
+                            <button className="btn btn-secondary mt-2" onClick={() => handleAddDay(subjectIndex)}>
+                  Add Day
+                </button>
           </div>
         ))}
       </div>
