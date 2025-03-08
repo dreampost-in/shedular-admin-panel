@@ -8,7 +8,7 @@ const Sidebar = () => {
       <nav className="nav flex-column">
       {/* <Link className="nav-link" to="/Edit-schedules">Add Table</Link>  */}
       <Link className="nav-link" to="/Edit-schedules">Available Table</Link> 
-        <Link className="nav-link" to="/content-resource-management">Add Shedule</Link>
+        <Link className="nav-link" to="/content-resource-management">Add Schedules</Link>
         <Link className="nav-link" to="/available-schedules">Available Schedules</Link> {/* /Edit-schedules link */}
         <Link className="nav-link" to="/users-sales">Users & Sales</Link>
         <Link className="nav-link" to="/user-activity">User Activity</Link>
