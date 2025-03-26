@@ -19,6 +19,7 @@ const Sidebar = () => {
         <Link className="nav-link" to="/Hiring-records">Hiring Records</Link>
         <Link className="nav-link" to="/Contactus">Contact Us</Link>
         <Link className="nav-link" to="/AdminStatistics">AdminStatistics</Link>
+        <Link className="nav-link" to="/Promocodes">Promo Codes</Link>
       </nav>
     </div>
   );

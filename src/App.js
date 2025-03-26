@@ -15,6 +15,7 @@ import EditShedular from './pages/EditShedular';
 import Hiring from './pages/Hiring';
 import Contactus from './pages/contactus';
 import AdminStatistics from './pages/AdminStatistics';
+import PromoCodesPage from './pages/PromoCodesPage';
 
 const App = () => {
   return (
@@ -36,6 +37,7 @@ const App = () => {
             <Route path="/Hiring-records" element={<Hiring />} /> {/* New route */}
             <Route path="/Contactus" element={<Contactus />} /> {/* New route */}
             <Route path="/AdminStatistics" element={<AdminStatistics />} /> {/* New route */}
+            <Route path="/Promocodes" element={<PromoCodesPage />} /> {/* New route */}
           </Routes>
         </div>
       </div>
