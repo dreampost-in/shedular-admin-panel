@@ -323,51 +323,78 @@ const EditScheduler = () => {
               </table>
 
               {/* Subjects */}
-              <h6 className="mt-4">Subjects</h6>
-              {viewCourseContent.subjects.map((subject, subjectIndex) => (
-                <div key={subjectIndex} className="mb-3">
-                  <h6 className="text-primary">{subject.title}</h6>
-                  <table className="table table-bordered table-striped">
-                    <thead>
-                      <tr>
-                        <th>Day</th>
-                        <th>Topic</th>
-                        <th>Description</th>
-                        <th>Hours</th>
-                        <th>Link</th>
-                        <th>PDF Name</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {subject.dailyContents.map((content, contentIndex) => (
-                        content.topics.map((topic, topicIndex) => (
-                          <tr key={`${contentIndex}-${topicIndex}`}>
-                            <td>Day {content.day}</td>
-                            <td>{topic.name}</td>
-                            <td>{topic.description}</td>
-                            <td>{topic.hours}</td>
-                            <td>
-                      {topic.link ? (
-                        <a
-                          href={topic.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{ color: linkStatuses[topic.link] ? 'blue' : 'red' }} // Red if broken
-                        >
-                          View Link
-                        </a>
-                      ) : (
-                        'N/A'
-                      )}
-                    </td>
-                            <td>{topic.pdfName || 'N/A'}</td>
-                          </tr>
-                        ))
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+{/* Group Data by Day */}
+<h6 className="mt-4">Course Schedule (Day-wise)</h6>
+{(() => {
+  const dayWiseData = {};
+
+  // Step 1: Organize topics under each day
+  viewCourseContent.subjects.forEach((subject) => {
+    subject.dailyContents.forEach((content) => {
+      if (!dayWiseData[content.day]) {
+        dayWiseData[content.day] = [];
+      }
+      dayWiseData[content.day].push({
+        subject: subject.title,
+        topic: content.topics.map((t) => ({
+          name: t.name,
+          description: t.description,
+          hours: t.hours,
+          link: t.link,
+          pdfName: t.pdfName,
+        })),
+      });
+    });
+  });
+
+  // Step 2: Render topics grouped by day
+  return Object.entries(dayWiseData).map(([day, subjects], dayIndex) => (
+    <div key={dayIndex} className="mb-3">
+      <h6 className="text-primary">Day {day}</h6>
+      {subjects.map((subjectData, subjectIndex) => (
+        <div key={subjectIndex} className="mb-2">
+          <h6 className="text-success">{subjectData.subject}</h6>
+          <table className="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th>Topic</th>
+                <th>Description</th>
+                <th>Hours</th>
+                <th>Link</th>
+                <th>PDF Name</th>
+              </tr>
+            </thead>
+            <tbody>
+              {subjectData.topic.map((topic, topicIndex) => (
+                <tr key={topicIndex}>
+                  <td>{topic.name}</td>
+                  <td>{topic.description}</td>
+                  <td>{topic.hours}</td>
+                  <td>
+                    {topic.link ? (
+                      <a
+                        href={topic.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: linkStatuses[topic.link] ? 'blue' : 'red' }}
+                      >
+                        View Link
+                      </a>
+                    ) : (
+                      'N/A'
+                    )}
+                  </td>
+                  <td>{topic.pdfName || 'N/A'}</td>
+                </tr>
               ))}
+            </tbody>
+          </table>
+        </div>
+      ))}
+    </div>
+  ));
+})()}
+
             </div>
           ) : (
             <p>Loading...</p>

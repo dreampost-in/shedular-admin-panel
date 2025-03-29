@@ -16,7 +16,7 @@ const PromoCodesPage = () => {
 
   const fetchPromoCodes = async () => {
     try {
-      const response = await api.get('/promos');
+      const response = await api.get('/promos'); // Updated API endpoint
       setPromoCodes(response.data);
     } catch (error) {
       console.error('Failed to fetch promo codes:', error);
@@ -75,6 +75,8 @@ const PromoCodesPage = () => {
             <th>#</th>
             <th>Code</th>
             <th>Discount (%)</th>
+            <th>Times Used</th>
+            <th>Total Discount Given</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -84,6 +86,8 @@ const PromoCodesPage = () => {
               <td>{index + 1}</td>
               <td>{promo.code}</td>
               <td>{promo.discount}</td>
+              <td>{promo.usageCount || 0}</td>
+              <td>{promo.totalDiscountAmount || 0}</td>
               <td>
                 <Button variant="danger" onClick={() => confirmDeletePromo(promo._id)}>Remove</Button>
               </td>
