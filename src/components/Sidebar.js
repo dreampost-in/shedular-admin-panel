@@ -1,8 +1,15 @@
 // src/components/Sidebar.js
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
-const Sidebar = () => {
+const Sidebar = ({ setIsAuthenticated }) => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('Atoken');
+    setIsAuthenticated(false);
+    navigate('/login');
+  };
   return (
     <div className="sidebar bg-light">
       <nav className="nav flex-column">
@@ -20,6 +27,9 @@ const Sidebar = () => {
         <Link className="nav-link" to="/Contactus">Contact Us</Link>
         <Link className="nav-link" to="/AdminStatistics">AdminStatistics</Link>
         <Link className="nav-link" to="/Promocodes">Promo Codes</Link>
+        <button className="btn btn-danger mt-4" onClick={handleLogout}>
+          Logout
+        </button>
       </nav>
     </div>
   );
